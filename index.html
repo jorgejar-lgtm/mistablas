@@ -1,0 +1,733 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mis Listas</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: Arial, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        .container {
+            max-width: 1100px;
+            margin: 0 auto;
+            background: white;
+            padding: 30px;
+            border-radius: 16px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+        }
+        .header-usuario {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-bottom: 20px;
+            border-bottom: 2px solid #e8eaf6;
+            margin-bottom: 25px;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+        .btn-cerrar {
+            background: #c62828;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+        .btn-cerrar:hover { opacity: 0.8; }
+        h1 { text-align: center; color: #1a237e; }
+        .subtitulo { text-align: center; color: #666; margin-bottom: 25px; }
+        
+        .tabs {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 25px;
+            flex-wrap: wrap;
+        }
+        .tab {
+            flex: 1;
+            padding: 12px 20px;
+            border: none;
+            background: #e8eaf6;
+            cursor: pointer;
+            border-radius: 10px;
+            font-weight: bold;
+            min-width: 120px;
+            transition: all 0.3s;
+        }
+        .tab:hover { background: #c5cae9; }
+        .tab.active {
+            background: #1a237e;
+            color: white;
+        }
+        
+        .form-container {
+            background: #f5f7ff;
+            padding: 20px;
+            border-radius: 12px;
+            margin-bottom: 25px;
+        }
+        .form-container h2 {
+            margin-bottom: 15px;
+            color: #1a237e;
+            font-size: 18px;
+        }
+        .form-row {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 12px;
+        }
+        .form-group {
+            display: flex;
+            flex-direction: column;
+        }
+        .form-group.full {
+            grid-column: 1 / -1;
+        }
+        .form-group label {
+            font-weight: 600;
+            margin-bottom: 4px;
+            font-size: 13px;
+            color: #333;
+        }
+        .form-group input,
+        .form-group textarea,
+        .form-group select {
+            padding: 10px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-size: 14px;
+            font-family: inherit;
+        }
+        .form-group input:focus,
+        .form-group textarea:focus {
+            border-color: #1a237e;
+            outline: none;
+        }
+        .form-group textarea {
+            resize: vertical;
+            min-height: 50px;
+        }
+        .btn-guardar {
+            background: #2e7d32;
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            border-radius: 10px;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 16px;
+            grid-column: 1 / -1;
+            transition: background 0.3s;
+        }
+        .btn-guardar:hover { background: #1b5e20; }
+        
+        /* Botones de días */
+        .btn-dias {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 10px;
+            flex-wrap: wrap;
+        }
+        .btn-dias button {
+            padding: 6px 16px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 13px;
+            transition: all 0.3s;
+        }
+        .btn-dias .btn-todos {
+            background: #1a237e;
+            color: white;
+        }
+        .btn-dias .btn-todos:hover { background: #283593; }
+        .btn-dias .btn-ninguno {
+            background: #c62828;
+            color: white;
+        }
+        .btn-dias .btn-ninguno:hover { background: #b71c1c; }
+        
+        .tabla-container {
+            background: #f5f7ff;
+            padding: 20px;
+            border-radius: 12px;
+            overflow-x: auto;
+        }
+        .tabla-container h2 {
+            margin-bottom: 15px;
+            color: #1a237e;
+            font-size: 18px;
+        }
+        .contador {
+            background: #1a237e;
+            color: white;
+            padding: 4px 14px;
+            border-radius: 20px;
+            font-size: 14px;
+            float: right;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background: white;
+            border-radius: 10px;
+            overflow: hidden;
+        }
+        thead {
+            background: #1a237e;
+            color: white;
+        }
+        th {
+            padding: 14px 16px;
+            text-align: left;
+            font-size: 13px;
+            font-weight: 600;
+        }
+        td {
+            padding: 12px 16px;
+            border-bottom: 1px solid #e8eaf6;
+            vertical-align: middle;
+        }
+        tr:hover td { background: #f8f9ff; }
+        tr:last-child td { border-bottom: none; }
+        
+        .btn-eliminar {
+            background: #c62828;
+            color: white;
+            border: none;
+            padding: 6px 14px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+        .btn-eliminar:hover { background: #b71c1c; }
+        
+        .vacio {
+            text-align: center;
+            color: #999;
+            padding: 40px;
+            font-size: 16px;
+        }
+        
+        .badge {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            background: #e8eaf6;
+            color: #333;
+            margin: 2px;
+        }
+        
+        .progress-container {
+            max-width: 200px;
+            background: #e0e0e0;
+            border-radius: 10px;
+            overflow: hidden;
+            height: 20px;
+            position: relative;
+            display: inline-block;
+            width: 100%;
+        }
+        .progress-bar {
+            height: 100%;
+            background: linear-gradient(90deg, #2e7d32, #66bb6a);
+            border-radius: 10px;
+            transition: width 0.5s ease;
+            width: 0%;
+        }
+        .progress-text {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 11px;
+            font-weight: bold;
+            color: #333;
+        }
+        
+        .dias-semana {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+        .dia-check {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            background: white;
+            padding: 4px 10px;
+            border-radius: 6px;
+            border: 2px solid #ddd;
+            cursor: pointer;
+            transition: all 0.2s;
+            user-select: none;
+        }
+        .dia-check:hover { border-color: #1a237e; }
+        .dia-check.seleccionado {
+            border-color: #1a237e;
+            background: #e8eaf6;
+        }
+        .dia-check input[type="checkbox"] {
+            width: 16px;
+            height: 16px;
+            cursor: pointer;
+            accent-color: #1a237e;
+        }
+        .dia-check label {
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            margin: 0;
+        }
+        
+        .vaso {
+            width: 30px;
+            height: 50px;
+            border: 2px solid #1a237e;
+            border-radius: 0 0 8px 8px;
+            position: relative;
+            overflow: hidden;
+            background: #f5f5f5;
+            display: inline-block;
+            vertical-align: middle;
+            margin-right: 8px;
+        }
+        .vaso .agua {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: linear-gradient(180deg, #42a5f5, #0d47a1);
+            transition: height 0.5s ease;
+            height: 0%;
+        }
+        
+        .btn-dia {
+            background: #1a237e;
+            color: white;
+            border: none;
+            padding: 4px 12px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 12px;
+            font-weight: bold;
+            margin-top: 4px;
+        }
+        .btn-dia:hover { opacity: 0.8; }
+        .btn-dia.hecho { background: #2e7d32; }
+        
+        .col-acciones { text-align: center; width: 80px; }
+        
+        @media (max-width: 600px) {
+            .container { padding: 15px; }
+            .form-row { grid-template-columns: 1fr; }
+            .tabs { flex-direction: column; }
+            th, td { padding: 8px 10px; font-size: 12px; }
+            .col-acciones { width: 60px; }
+            .header-usuario { flex-direction: column; text-align: center; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- HEADER -->
+        <div class="header-usuario">
+            <div>
+                <strong>👤 <span id="nombre-usuario">Usuario</span></strong>
+                <span style="color:#666;font-size:14px;margin-left:10px;" id="email-usuario"></span>
+            </div>
+            <button class="btn-cerrar" onclick="cerrarSesion()">🚪 Cerrar Sesión</button>
+        </div>
+
+        <h1>📋 Mis Listas</h1>
+        <p class="subtitulo">Todo, Actividades Semanales y Hábitos</p>
+
+        <!-- TABS -->
+        <div class="tabs">
+            <button class="tab active" onclick="cambiarTabla('lista_todo', this)">📝 Todo</button>
+            <button class="tab" onclick="cambiarTabla('lista_actividades', this)">📅 Actividades</button>
+            <button class="tab" onclick="cambiarTabla('lista_habitos', this)">✅ Hábitos</button>
+        </div>
+
+        <!-- FORMULARIO -->
+        <div class="form-container">
+            <h2 id="form-title">➕ Agregar Tarea</h2>
+            <form id="formulario" onsubmit="guardarDatos(event)">
+                <div id="campos-dinamicos"></div>
+            </form>
+        </div>
+
+        <!-- TABLA -->
+        <div class="tabla-container">
+            <h2>📊 Registros <span class="contador" id="contador">0</span></h2>
+            <div id="tabla-datos">
+                <div class="vacio">⏳ Cargando...</div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ============================================
+        // VERIFICAR USUARIO
+        // ============================================
+        const usuarioId = localStorage.getItem('usuario_id');
+        const usuarioNombre = localStorage.getItem('usuario_nombre');
+        const usuarioEmail = localStorage.getItem('usuario_email');
+
+        if (!usuarioId) {
+            window.location.href = 'login.html';
+        }
+        document.getElementById('nombre-usuario').textContent = usuarioNombre || 'Usuario';
+        document.getElementById('email-usuario').textContent = usuarioEmail || '';
+
+        function cerrarSesion() {
+            localStorage.clear();
+            window.location.href = 'login.html';
+        }
+
+        // ============================================
+        // CONFIGURACIÓN
+        // ============================================
+        let tablaActual = 'lista_todo';
+        const API_URL = 'api.php';
+        const DIAS_SEMANA = ['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado', 'Domingo'];
+
+        const camposPorTabla = {
+            lista_todo: [
+                { nombre: 'titulo', tipo: 'text', label: 'Tarea', required: true, placeholder: 'Ej: Dejar el azúcar' },
+                { nombre: 'descripcion', tipo: 'textarea', label: 'Descripción' },
+                { nombre: 'fecha_inicio', tipo: 'date', label: 'Fecha inicio', required: true },
+                { nombre: 'fecha_fin', tipo: 'date', label: 'Fecha fin', required: true },
+                { nombre: 'meta', tipo: 'number', label: 'Meta (días)', required: true, placeholder: 'Ej: 30' }
+            ],
+            lista_actividades: [
+                { nombre: 'titulo', tipo: 'text', label: 'Actividad', required: true, placeholder: 'Ej: Ir al gimnasio' },
+                { nombre: 'descripcion', tipo: 'textarea', label: 'Descripción' },
+                { nombre: 'dias', tipo: 'dias', label: 'Días que se repite' },
+                { nombre: 'hora', tipo: 'text', label: 'Hora', placeholder: '07:00 - 08:00' },
+                { nombre: 'fecha_inicio', tipo: 'date', label: 'Fecha inicio', required: true },
+                { nombre: 'fecha_fin', tipo: 'date', label: 'Fecha fin' }
+            ],
+            lista_habitos: [
+                { nombre: 'nombre', tipo: 'text', label: 'Nombre del hábito', required: true, placeholder: 'Ej: Leer 30 min' },
+                { nombre: 'descripcion', tipo: 'textarea', label: 'Descripción' },
+                { nombre: 'fecha_inicio', tipo: 'date', label: 'Fecha inicio', required: true },
+                { nombre: 'meta_dias', tipo: 'number', label: 'Meta (días)', required: true, placeholder: 'Ej: 30' }
+            ]
+        };
+
+        const nombresTablas = {
+            lista_todo: 'Tarea',
+            lista_actividades: 'Actividad Semanal',
+            lista_habitos: 'Hábito'
+        };
+
+        // ============================================
+        // FUNCIONES
+        // ============================================
+        function cambiarTabla(tabla, boton) {
+            tablaActual = tabla;
+            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+            boton.classList.add('active');
+            actualizarFormulario();
+            cargarDatos();
+        }
+
+        function actualizarFormulario() {
+            const campos = camposPorTabla[tablaActual];
+            const container = document.getElementById('campos-dinamicos');
+            document.getElementById('form-title').textContent = `➕ Agregar ${nombresTablas[tablaActual]}`;
+            container.innerHTML = '';
+
+            let html = '<div class="form-row">';
+            campos.forEach(campo => {
+                const full = campo.tipo === 'textarea' || campo.tipo === 'dias';
+                html += `<div class="form-group${full ? ' full' : ''}">`;
+                html += `<label>${campo.label}</label>`;
+                
+                if (campo.tipo === 'textarea') {
+                    html += `<textarea name="${campo.nombre}" ${campo.required ? 'required' : ''}></textarea>`;
+                } else if (campo.tipo === 'dias') {
+                    html += `<div class="btn-dias">`;
+                    html += `<button type="button" class="btn-todos" onclick="seleccionarTodos()">✅ Todos</button>`;
+                    html += `<button type="button" class="btn-ninguno" onclick="deseleccionarTodos()">❌ Ninguno</button>`;
+                    html += `</div>`;
+                    html += `<div class="dias-semana" id="dias-selector">`;
+                    DIAS_SEMANA.forEach(dia => {
+                        html += `<div class="dia-check" onclick="toggleDia(this)">
+                                    <input type="checkbox" name="dias" value="${dia}">
+                                    <label>${dia.substring(0, 3)}</label>
+                                </div>`;
+                    });
+                    html += `</div>`;
+                    html += `<input type="hidden" name="dias_seleccionados" id="dias_seleccionados">`;
+                } else {
+                    html += `<input type="${campo.tipo}" name="${campo.nombre}" 
+                                   ${campo.required ? 'required' : ''} 
+                                   placeholder="${campo.placeholder || ''}">`;
+                }
+                
+                html += `</div>`;
+            });
+            html += `<button type="submit" class="btn-guardar">💾 Guardar</button>`;
+            html += '</div>';
+            
+            container.innerHTML = html;
+        }
+
+        function toggleDia(el) {
+            const checkbox = el.querySelector('input[type="checkbox"]');
+            checkbox.checked = !checkbox.checked;
+            el.classList.toggle('seleccionado');
+            actualizarDiasSeleccionados();
+        }
+
+        function seleccionarTodos() {
+            const checks = document.querySelectorAll('#dias-selector input[type="checkbox"]');
+            checks.forEach(cb => {
+                cb.checked = true;
+                const parent = cb.closest('.dia-check');
+                if (parent) parent.classList.add('seleccionado');
+            });
+            actualizarDiasSeleccionados();
+        }
+
+        function deseleccionarTodos() {
+            const checks = document.querySelectorAll('#dias-selector input[type="checkbox"]');
+            checks.forEach(cb => {
+                cb.checked = false;
+                const parent = cb.closest('.dia-check');
+                if (parent) parent.classList.remove('seleccionado');
+            });
+            actualizarDiasSeleccionados();
+        }
+
+        function actualizarDiasSeleccionados() {
+            const checks = document.querySelectorAll('#dias-selector input[type="checkbox"]:checked');
+            const valores = Array.from(checks).map(c => c.value);
+            const input = document.getElementById('dias_seleccionados');
+            if (input) input.value = valores.join(',');
+        }
+
+        // ============================================
+        // CARGAR DATOS
+        // ============================================
+        function cargarDatos() {
+            const container = document.getElementById('tabla-datos');
+            container.innerHTML = '<div class="vacio">⏳ Cargando...</div>';
+
+            fetch(`${API_URL}?action=obtener&tabla=${tablaActual}&id_usuario=${usuarioId}`)
+                .then(res => res.json())
+                .then(data => {
+                    if (data.error) {
+                        container.innerHTML = `<div class="vacio">❌ ${data.error}</div>`;
+                        return;
+                    }
+                    
+                    document.getElementById('contador').textContent = data.length;
+                    
+                    if (data.length === 0) {
+                        container.innerHTML = '<div class="vacio">📭 No hay registros. ¡Agrega uno!</div>';
+                        return;
+                    }
+
+                    let html = `<table><thead><tr>`;
+                    
+                    if (tablaActual === 'lista_todo') {
+                        html += `<th>#</th><th>Tarea</th><th>Inicio</th><th>Fin</th><th>Progreso</th><th class="col-acciones">🗑️</th></tr></thead><tbody>`;
+                        data.forEach((item, i) => {
+                            const p = parseInt(item.progreso) || 0;
+                            const m = parseInt(item.meta) || 1;
+                            const por = Math.min(Math.round((p / m) * 100), 100);
+                            html += `<tr>
+                                <td>${i + 1}</td>
+                                <td><strong>${item.titulo || '—'}</strong><br><small style="color:#666;">${item.descripcion || ''}</small></td>
+                                <td>${item.fecha_inicio || '—'}</td>
+                                <td>${item.fecha_fin || '—'}</td>
+                                <td>
+                                    <div class="progress-container">
+                                        <div class="progress-bar" style="width: ${por}%"></div>
+                                        <span class="progress-text">${por}% (${p}/${m})</span>
+                                    </div>
+                                    <button class="btn-dia" onclick="avanzarTodo(${item.id})">✅ +1 Día</button>
+                                </td>
+                                <td class="col-acciones"><button class="btn-eliminar" onclick="eliminarDatos(${item.id})">✕</button></td>
+                            </tr>`;
+                        });
+                    } else if (tablaActual === 'lista_actividades') {
+                        html += `<th>#</th><th>Actividad</th><th>Días</th><th>Hora</th><th>Inicio</th><th>Fin</th><th class="col-acciones">🗑️</th></tr></thead><tbody>`;
+                        data.forEach((item, i) => {
+                            const dias = item.dias ? item.dias.split(',').map(d => d.trim()) : [];
+                            html += `<tr>
+                                <td>${i + 1}</td>
+                                <td><strong>${item.titulo || '—'}</strong><br><small style="color:#666;">${item.descripcion || ''}</small></td>
+                                <td>${dias.map(d => `<span class="badge">${d}</span>`).join(' ') || '—'}</td>
+                                <td>${item.hora || '—'}</td>
+                                <td>${item.fecha_inicio || '—'}</td>
+                                <td>${item.fecha_fin || '—'}</td>
+                                <td class="col-acciones"><button class="btn-eliminar" onclick="eliminarDatos(${item.id})">✕</button></td>
+                            </tr>`;
+                        });
+                    } else if (tablaActual === 'lista_habitos') {
+                        html += `<th>#</th><th>Hábito</th><th>Inicio</th><th>Progreso</th><th class="col-acciones">🗑️</th></tr></thead><tbody>`;
+                        data.forEach((item, i) => {
+                            const c = parseInt(item.dias_completados) || 0;
+                            const m = parseInt(item.meta_dias) || 30;
+                            const por = Math.min(Math.round((c / m) * 100), 100);
+                            const hecho = c >= m;
+                            html += `<tr>
+                                <td>${i + 1}</td>
+                                <td><strong>${item.nombre || '—'}</strong><br><small style="color:#666;">${item.descripcion || ''}</small></td>
+                                <td>${item.fecha_inicio || '—'}</td>
+                                <td>
+                                    <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
+                                        <div class="vaso">
+                                            <div class="agua" style="height: ${por}%"></div>
+                                        </div>
+                                        <span style="font-weight:bold;">${c}/${m} (${por}%)</span>
+                                        <button class="btn-dia ${hecho ? 'hecho' : ''}" onclick="registrarDiaHabito(${item.id})">
+                                            ${hecho ? '✅ Completo' : '➕ Día'}
+                                        </button>
+                                    </div>
+                                </td>
+                                <td class="col-acciones"><button class="btn-eliminar" onclick="eliminarDatos(${item.id})">✕</button></td>
+                            </tr>`;
+                        });
+                    }
+                    
+                    html += `</tbody></table>`;
+                    container.innerHTML = html;
+                })
+                .catch(error => {
+                    container.innerHTML = `<div class="vacio">❌ Error: ${error.message}</div>`;
+                });
+        }
+
+        // ============================================
+        // ACCIONES
+        // ============================================
+        function avanzarTodo(id) {
+            fetch(`${API_URL}?action=obtener&tabla=lista_todo&id_usuario=${usuarioId}`)
+                .then(res => res.json())
+                .then(data => {
+                    const item = data.find(i => i.id === id);
+                    if (item) {
+                        const datos = {
+                            id_usuario: usuarioId,
+                            titulo: item.titulo,
+                            descripcion: item.descripcion,
+                            fecha_inicio: item.fecha_inicio,
+                            fecha_fin: item.fecha_fin,
+                            meta: item.meta,
+                            progreso: (parseInt(item.progreso) || 0) + 1
+                        };
+                        fetch(`${API_URL}?action=guardar&tabla=lista_todo`, {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify(datos)
+                        }).then(() => cargarDatos());
+                    }
+                });
+        }
+
+        function registrarDiaHabito(id) {
+            fetch(`${API_URL}?action=obtener&tabla=lista_habitos&id_usuario=${usuarioId}`)
+                .then(res => res.json())
+                .then(data => {
+                    const item = data.find(i => i.id === id);
+                    if (item) {
+                        const datos = {
+                            id_usuario: usuarioId,
+                            nombre: item.nombre,
+                            descripcion: item.descripcion,
+                            fecha_inicio: item.fecha_inicio,
+                            meta_dias: item.meta_dias,
+                            dias_completados: (parseInt(item.dias_completados) || 0) + 1
+                        };
+                        fetch(`${API_URL}?action=guardar&tabla=lista_habitos`, {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify(datos)
+                        }).then(() => cargarDatos());
+                    }
+                });
+        }
+
+        function guardarDatos(event) {
+            event.preventDefault();
+            const form = document.getElementById('formulario');
+            const formData = new FormData(form);
+            const datos = { id_usuario: usuarioId };
+            
+            formData.forEach((value, key) => {
+                if (key === 'dias_seleccionados') return;
+                if (key === 'dias') return;
+                if (value) datos[key] = value;
+            });
+
+            if (tablaActual === 'lista_actividades') {
+                const ds = document.getElementById('dias_seleccionados');
+                if (ds && ds.value) {
+                    datos.dias = ds.value;
+                }
+            }
+
+            if (tablaActual === 'lista_todo' && !datos.progreso) {
+                datos.progreso = 0;
+            }
+            if (tablaActual === 'lista_habitos' && !datos.dias_completados) {
+                datos.dias_completados = 0;
+            }
+
+            fetch(`${API_URL}?action=guardar&tabla=${tablaActual}`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(datos)
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (data.success) {
+                    form.reset();
+                    document.querySelectorAll('#dias-selector .dia-check').forEach(el => {
+                        el.classList.remove('seleccionado');
+                        el.querySelector('input[type="checkbox"]').checked = false;
+                    });
+                    actualizarDiasSeleccionados();
+                    cargarDatos();
+                } else {
+                    alert('❌ Error: ' + (data.error || 'Error desconocido'));
+                }
+            })
+            .catch(error => {
+                alert('❌ Error: ' + error.message);
+            });
+        }
+
+        function eliminarDatos(id) {
+            if (!confirm('¿Eliminar este registro?')) return;
+            
+            fetch(`${API_URL}?action=eliminar&tabla=${tablaActual}&id=${id}&id_usuario=${usuarioId}`)
+                .then(res => res.json())
+                .then(() => cargarDatos());
+        }
+
+        // ============================================
+        // INICIALIZAR
+        // ============================================
+        document.addEventListener('DOMContentLoaded', function() {
+            actualizarFormulario();
+            cargarDatos();
+        });
+    </script>
+</body>
+</html>
